@@ -18,11 +18,16 @@ namespace Calculator
 {
     class calm
     {
+        public static int? count = 0, va1 = 0, va2 = 0, culflg = 0, result = 0, flag = 0;
+        //culflg -> 1:+ , 2:- , 3:* , 4:/
+        //flag -> null:exit , 2:result
+        //private static Dictionary<キーの型/クラス, > f = new Dictionary<キーの型/クラス, 値の型/クラス>();
         static int Main()
         {
             //List <string> ma = new List <string>();
-            int exit = 0;
+            //int? result, flag;
             string str1, str2, str3;
+            //int[] flag = new int[2];
             calm c1 = new calm();
 
             Console.WriteLine("Calculator");
@@ -31,10 +36,16 @@ namespace Calculator
             {
 
                 Console.Write(">>");
-                exit = c1.Stsp(Console.ReadLine());
-                if(exit == 1)
+                flag = c1.Stsp(Console.ReadLine());
+                if (flag == null)
                 {
                     return 0;
+                }else if (flag == 2)
+                {
+                    Console.WriteLine("----------");
+                    Console.WriteLine(result);
+                    Console.WriteLine("----------");
+                    count = va1 = va2 = culflg = result = flag = 0;
                 }
                 else
                 {
@@ -44,8 +55,10 @@ namespace Calculator
             }
         }
 
-        private int Stsp(string str)
+        private int? Stsp(string str)
         {
+            calm c1 = new calm();
+            //int count, va1, va2;
             Console.WriteLine("1 -- typed --> " + str);
             if (Regex.IsMatch(str, "^--"))
             {
@@ -63,15 +76,89 @@ namespace Calculator
                         Console.WriteLine("This command is not defined");
                         return 0;
                 }
-
             }
+            else if (Regex.IsMatch(str, "^[0-9]+$"))  //すべて数字（1回目）
+            {
+                if (count == 0)
+                {
+                    count++;
+                    Console.WriteLine("int-" + count);
+                    va1 = int.Parse(str);
+                    Console.WriteLine("va1 -> " + va1);
+                    //return 0;
+                }
+                else if ((count == 1)&&(culflg != 0))
+                {
+                    count++;
+                    Console.WriteLine("int-" + count);
+                    va2 = int.Parse(str);
+                    Console.WriteLine("va2 -> " + va2);
+                    //return 0;
+                }
+                else
+                {
+                    Console.WriteLine("ennzannsi kure");
+                    
+                }
+                return 0;
+            }/*
+            else if (str == "=")
+            {
+                if (count > 0)
+                {
+                    Console.WriteLine("eq");
+                    //return 0;
+                }
+                else
+                {
+                    Console.WriteLine("Error");
+                    //return 0;
+                }
+                return 0;
+            }*/
             else if (str == "exit")
             {
-                return 1;
+                return null;
             }
             else
             {
-                Console.WriteLine("else");
+                switch (str)
+                {
+                    case "+":
+                        Console.WriteLine("sw-+");
+                        culflg = 1;
+                        Console.WriteLine(culflg);
+                        break;
+                    case "-":
+                        Console.WriteLine("sw--");
+                        culflg = 2;
+                        break;
+                    case "*":
+                        Console.WriteLine("sw-*");
+                        culflg = 3;
+                        break;
+                    case "/":
+                        Console.WriteLine("sw-/");
+                        culflg = 4;
+                        break;
+                    case "=":
+                        Console.WriteLine("sw-=");
+                        //culflg = 5; //計算専用関数に飛べばいいかも
+                        Eq();
+                        return 2;
+                        //break;
+                    default:
+                        if (count == 1)
+                        {
+                            Console.WriteLine("ennzannsi kure");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Error");
+                        }
+                        break;
+                }
+                //Console.WriteLine("else");
                 return 0;
             }
             /*
@@ -147,6 +234,39 @@ namespace Calculator
                 i++;    //0--
             */
             //}
+        }
+        
+        private int? Eq()
+        {
+            calm c1 = new calm();
+            Console.WriteLine("clu->" + culflg);
+            
+            //Console.WriteLine("----------");
+            
+            //Console.Write(va1+" ");
+            switch (culflg)
+            {
+                case 1:
+                    //Console.WriteLine("++++++++++++" + va1 + "==" + va2);
+                    result = va1 + va2;
+                    break;
+                case 2:
+                    Console.WriteLine("--------" + va1 + "==" + va2);
+                    result = va1 - va2;
+                    break;
+                case 3:
+                    result = va1 * va2;
+                    break;
+                case 4:
+                    result = va1 / va2;
+                    break;
+            }
+            //Console.Write(va2 + " ");
+
+
+            //Console.WriteLine()
+            
+            return 0;
         }
     /*
         //private double List<int> cd1 = new List<int>();
