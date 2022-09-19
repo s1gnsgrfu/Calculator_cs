@@ -14,12 +14,21 @@ namespace Calculator
     class calm
     {
         private static int? culflg = 0, flag = 0, culflg2 = 0;
-        private static int prod1 = 0, prod2 = 0, c_cnt1 = 0, c_pcnt1 = 0, c_pcnt2 = 0, c_cnt2 = 0, carr1 = 0, carr2 = 0, tmpcf = 0, err = 0, cntp1 = 0, cntp2 = 0, res = 0;
-        private static decimal va1 = 0, va2 = 0, result = 0, ctmp1_1, ctmp1_2 = 0, ctmp2_1 = 0, ctmp2_2 = 0, pow = 1;
+        private static int prod1 = 0, prod2 = 0, tmpcf = 0, err = 0, res = 0;
+        private static decimal result = 0, pow = 1;
         private static string tmp;
+        private int[] c_cnt = new int[2];
+        private int[] c_pcnt = new int[2];
+        private int[] carr = new int[2];
+        private int[] cntp = new int[2];
+        private decimal[] va = new decimal[2];
+        private decimal[] ctmp = new decimal[4];
+
+        private decimal pi = 3.14159265359m;
+
+
         //culflg -> 1:+ , 2:- , 3:* , 4:/
         //flag -> null:exit , 2:result
-
         //operator --> q:+ , w:- , e:* , r:/ , a:=
         static int Main()
         {
@@ -47,18 +56,18 @@ namespace Calculator
                         Console.WriteLine("----------");
 
                         culflg = 0;
-                        c_cnt1 = c_pcnt1 = carr1 = tmpcf = err = cntp1 = cntp2 = tmpcf = 0;
-                        va1 = result = 0;
+                        c1.c_cnt[0] = c1.c_pcnt[0] = c1.carr[0] = tmpcf = err = c1.cntp[0] = c1.cntp[1] = tmpcf = 0;
+                        c1.va[0] = result = 0;
                     }
                     else if (res == 1)
                     {
-                        va1 = result;
-                        tmpcf = c_cnt1 = 1;
-                        //Console.WriteLine("va1 --> " + va1);
+                        c1.va[0] = result;
+                        tmpcf = c1.c_cnt[0] = 1;
                     }
                     flag = 0;
-                    carr2 = c_pcnt2 = c_cnt2 = 0;
-                    ctmp2_1 = ctmp2_2 = va2 = ctmp1_1 = ctmp1_2 = 0;
+                    c1.carr[1] = c1.c_pcnt[1] = c1.c_cnt[1] = 0;
+                    c1.ctmp[2] = c1.ctmp[3] = c1.va[1] = c1.ctmp[0] = c1.ctmp[1] = 0;
+                    
 
                     //処理終了初期化
                 }
@@ -73,145 +82,79 @@ namespace Calculator
         {
             calm c1 = new calm();
 
-            culflg2 = prod1 = prod2 = cntp1 = cntp2 = 0;
+
+
+            //エラー時のロールバック
+            if ((va[0] == 0) && (err == 1)) 
+            {
+                c_cnt[0] = c_pcnt[0] = carr[0] = 0;
+            }
+            else if ((va[0] != 0) && (err == 1)) 
+            {
+                c_cnt[1] = c_pcnt[1] = carr[1] = 0;
+            }
+
+            culflg2 = prod1 = prod2 = cntp[0] = cntp[1] = 0;
             pow = 1;
-
-            if ((va1 == 0) && (err == 1)) 
-            {
-                c_cnt1 = c_pcnt1 = carr1 = 0;
-            }
-            else if ((va1 != 0) && (err == 1)) 
-            {
-                c_cnt2 = c_pcnt2 = carr2 = 0;
-            }
-
             err = 0;
 
-            foreach (char tmp in str)
+            foreach (char tmpc in str)
             {
-                if (va1 == 0)
-                {
-                    c_cnt1++;               //c_cntに-1すればピリオド前の数値数
-                                            //c_cntからc_pcntを引けばピリオド後の数値数
-                    if (tmp == '.')
-                    {
-                        if (prod1 == 0)
-                        {
-                            prod1 = 1;
-                            cntp1++;
-                            c_pcnt1 = c_cnt1;
-                        }
-                        else
-                        {
-                            cntp1++;
-                        }
-                        
-                    }
-                }
-                else if ((c_cnt1 != 0) && (tmpcf == 1)) 
-                {
-                    c_cnt2++;
-
-                    if (tmp == '.')
-                    {
-                        if (prod2 == 0)
-                        {
-                            prod2 = 1;
-                            cntp2++;
-                            c_pcnt2 = c_cnt2;
-                        }
-                        else
-                        {
-                            cntp2++;
-                        }
-                    }
-                }
-
-                switch (tmp)
-                {
-                    case '+':
-                        culflg2 = 1;
-                        break;
-                    case '-':
-                        culflg2 = 2;
-                        break;
-                    case '*':
-                        culflg2 = 3;
-                        break;
-                    case '/':
-                        culflg2 = 4;
-                        break;
-                }
-                //Console.WriteLine(culflg);
+                String_analyze(tmpc);
+                
             }
             /*
-            Console.WriteLine("c_cnt1  --> "+c_cnt1);
-            Console.WriteLine("c_pcnt1 -->"+c_pcnt1);
-            Console.WriteLine("c_cnt2  --> " + c_cnt2);
-            Console.WriteLine("c_pcnt2  -->" + c_pcnt2);
+            debug
+            Console.WriteLine("c_cnt1  --> " + c_cnt[0]);
+            Console.WriteLine("c_pcnt1 -->"+c_pcnt[0]);
+            Console.WriteLine("c_cnt2  --> " + c_cnt[1]);
+            Console.WriteLine("c_pcnt2  -->" + c_pcnt[1]);
             Console.WriteLine("prod1 --> " + prod1);
             Console.WriteLine("pro21 --> " + prod2);
+            Console.WriteLine("culflg --> " + culflg);
+            Console.WriteLine("culflg2 --> " + culflg2);
             */
+            
             if (Regex.IsMatch(str, "^--"))
             {
-
-                switch (str[2..^0])
-                {
-                    case "help":
-                        Console.WriteLine("help");
-                        return 0;
-                    case "version":
-                        Console.WriteLine("version");
-                        Console.WriteLine("v1.0.0");
-                        return 0;
-                    default:
-                        Console.WriteLine("This command is not defined");
-                        return 0;
-                }
-            } else if ((prod1 == 1) && (culflg2 == 0) && (cntp1 == 1))
-            {
-                carr1 = c_cnt1 - c_pcnt1;                       //小数点後の数値の数
-                tmp = str.Substring(c_pcnt1, carr1);            //小数点後の数値（文字列）
-                ctmp1_1 = decimal.Parse(str[0..^carr1]);        //小数点前の数値をdecimal型に変換
-                ctmp1_2 = decimal.Parse(tmp);                   //小数点後の数値をdecimal型に変換
-
-                for (int i = 0; i < carr1; i++)
-                {
-                    pow = Decimal.Multiply(pow, 0.1m);
-                }
-                va1 = ctmp1_1 + ctmp1_2 * pow;                  //小数点前後の数値を結合
+                Disp_option(str);
                 return 0;
-            } else if ((prod2 == 1) && (culflg2 == 0) && (va2 == 0) && (cntp2 == 1))
+            }
+            else if (str == ".")
             {
-                carr2 = c_cnt2 - c_pcnt2;                       //小数点後の数値の数
-                tmp = str.Substring(c_pcnt2, carr2);            //小数点後の数値（文字列）
-                ctmp2_1 = decimal.Parse(str[0..^carr2]);        //小数点前の数値をdecimal型に変換
-                ctmp2_2 = decimal.Parse(tmp);                   //小数点後の数値をdecimal型に変換
-
-                for (int i = 0; i < carr2; i++)
-                {
-                    pow = Decimal.Multiply(pow, 0.1m);
-                }
-                va2 = ctmp2_1 + ctmp2_2 * pow;                  //小数点前後の数値を結合
+                Console.WriteLine("Error");
+                err = 1;
                 return 0;
+            } 
+            else if ((prod1 == 1) && (culflg2 == 0) && (cntp[0] == 1))
+            {
+                Decimal_coupling(0,str);
+                return 0;
+                
+            }
+            else if ((prod2 == 1) && (culflg2 == 0) && (va[1] == 0) && (cntp[1] == 1))
+            {
+                Decimal_coupling(1,str);
+                return 0;
+                
             }
             else if (Regex.IsMatch(str, "^([0-9])+$"))
             {
-                if ((culflg2 == 0) && (va1 == 0) && (res == 0))
+                if ((culflg2 == 0) && (va[0] == 0) && (res == 0))
                 {
-                    va1 = decimal.Parse(str);
+                    va[0] = decimal.Parse(str);
                 }
-                else if ((culflg2 == 0) && (va1 != 0) && (culflg != 0))
+                else if ((culflg2 == 0) && (va[0] != 0) && (culflg != 0))
                 {
-                    va2 = decimal.Parse(str);
+                    va[1] = decimal.Parse(str);
                 } else if ((culflg2 == 0) && (res == 1)) 
                 {
-                    va2 = decimal.Parse(str);
+                    va[1] = decimal.Parse(str);
                 }
                 else
-            {
+                {
                 Console.WriteLine("please enter the operator");
-            }
+                }
                 return 0;
             }
             else if (str == "exit")
@@ -227,7 +170,7 @@ namespace Calculator
                     case "q":
                         if (tmpcf == 1)
                         {
-                            Eq();
+                            Calculation();
                             res = 1;
                             culflg = 1;
                             return 2;
@@ -239,7 +182,7 @@ namespace Calculator
                     case "w":
                         if (tmpcf == 1)
                         {
-                            Eq();
+                            Calculation();
                             res = 1;
                             culflg = 2;
                             return 2;
@@ -251,7 +194,7 @@ namespace Calculator
                     case "e":
                         if (tmpcf == 1)
                         {
-                            Eq();
+                            Calculation();
                             res = 1;
                             culflg = 3;
                             return 2;
@@ -263,7 +206,7 @@ namespace Calculator
                     case "r":
                         if (tmpcf == 1)
                         {
-                            Eq();
+                            Calculation();
                             res = 1;
                             culflg = 4;
 
@@ -274,10 +217,10 @@ namespace Calculator
                         break;
                     case "=":
                     case "a":
-                        Eq();
+                        Calculation();
                         return 2;
                     default:
-                        if ((va1 != 0) && (culflg == 0)) 
+                        if ((va[0] != 0) && (culflg == 0)) 
                         {
                             Console.WriteLine("please enter the operator");
                         }
@@ -291,24 +234,140 @@ namespace Calculator
                 return 0;
             }
         }
-        
-        private int? Eq()
+
+        private void String_analyze(char tmpc)
+        {
+            if (va[0] == 0)
+            {
+                c_cnt[0]++;               //c_cntに-1すればピリオド前の数値数
+                                          //c_cntからc_pcntを引けばピリオド後の数値数
+                if (tmpc == '.')
+                {
+                    
+                    if (prod1 == 0)
+                    {
+                        prod1 = 1;
+                        cntp[0]++;
+                        c_pcnt[0] = c_cnt[0];
+                    }
+                    else
+                    {
+                        cntp[0]++;
+                    }
+
+                }
+            }
+            else if ((c_cnt[0] != 0) && (tmpcf == 1))
+            {
+                c_cnt[1]++;
+
+                if (tmpc == '.')
+                {
+                    if (prod2 == 0)
+                    {
+                        prod2 = 1;
+                        cntp[1]++;
+                        c_pcnt[1] = c_cnt[1];
+                    }
+                    else
+                    {
+                        cntp[1]++;
+                    }
+                }
+            }
+
+            switch (tmpc)
+            {
+                case '+':
+                    culflg2 = 1;
+                    break;
+                case '-':
+                    culflg2 = 2;
+                    break;
+                case '*':
+                    culflg2 = 3;
+                    break;
+                case '/':
+                    culflg2 = 4;
+                    break;
+            }
+        }
+
+        private void Disp_option(string str)
+        {
+            switch (str[2..^0])
+            {
+                case "help":
+                    Console.WriteLine("help");
+                    break;
+                case "version":
+                    Console.WriteLine("version");
+                    Console.WriteLine("v1.0.0");
+                    break;
+                default:
+                    Console.WriteLine("This command is not defined");
+                    break;
+            }
+            return;
+        }
+
+        private void Decimal_coupling(int ind, string str)
+        {
+            calm c1 = new calm();
+
+            int ind2 = ind;
+            string tmp;
+
+            /*
+            debug
+            Console.WriteLine("ind --> " + ind);
+            Console.WriteLine("str --> " + str);
+            */
+
+            carr[ind] = c_cnt[ind] - c_pcnt[ind];                       //小数点後の数値の数
+            tmp = str.Substring(c_pcnt[ind], carr[ind]);            //小数点後の数値（文字列）
+            //Console.WriteLine("tmp --> " + tmp);
+            if (ind == 1)
+            {
+                ind2 += 1;
+            }
+            ctmp[ind2] = decimal.Parse(str[0..^carr[ind]]);        //小数点前の数値をdecimal型に変換
+            ctmp[ind2+1] = decimal.Parse(tmp);                   //小数点後の数値をdecimal型に変換
+
+            for (int i = 0; i < carr[ind]; i++)
+            {
+                pow = Decimal.Multiply(pow, 0.1m);
+            }
+            va[ind] = ctmp[ind2] + ctmp[ind2+1] * pow;                  //小数点前後の数値を結合
+            return;
+        }
+
+
+        private int? Calculation()
         {
             calm c1 = new calm();
 
             switch (culflg)
             {
                 case 1:
-                    result = va1 + va2;
+                    result = va[0] + va[1];
                     break;
                 case 2:
-                    result = va1 - va2;
+                    result = va[0] - va[1];
                     break;
                 case 3:
-                    result = va1 * va2;
+                    result = va[0] * va[1];
                     break;
                 case 4:
-                    result = va1 / va2;
+                    try
+                    {
+                        result = va[0] / va[1];
+                    }
+                    catch(DivideByZeroException)
+                    {
+                        Console.WriteLine("Error");
+                        res = 1;
+                    }
                     break;
             }
             return 0;
