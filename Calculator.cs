@@ -315,15 +315,17 @@ namespace Calculator
         {
             calm c1 = new calm();
 
-            int ind2 = ind;
-            string tmp;
+            //int ind2 = ind;
+            //string tmp;
+
+            va[ind] = decimal.Parse(str);
 
             /*
             debug
             Console.WriteLine("ind --> " + ind);
             Console.WriteLine("str --> " + str);
             */
-
+            /*
             carr[ind] = c_cnt[ind] - c_pcnt[ind];                       //小数点後の数値の数
             tmp = str.Substring(c_pcnt[ind], carr[ind]);            //小数点後の数値（文字列）
             //Console.WriteLine("tmp --> " + tmp);
@@ -339,6 +341,7 @@ namespace Calculator
                 pow = Decimal.Multiply(pow, 0.1m);
             }
             va[ind] = ctmp[ind2] + ctmp[ind2+1] * pow;                  //小数点前後の数値を結合
+            */
             return;
         }
 
