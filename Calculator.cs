@@ -213,7 +213,6 @@ namespace Calculator
                         culflg = 1;
                         tmpcf = 1;
                         prod1 = 0;
-                        Console.WriteLine(culflg);
                         break;
                     case "-":
                         culflg = 2;
