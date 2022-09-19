@@ -7,23 +7,20 @@ This software is released under the MIT License.
 see https://github.com/s1gnsgrfu/calculator_cs/blob/master/LICENSE
 */
 
-using System;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
-using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using System.Diagnostics;
 
 namespace Calculator
 {
     class calm
     {
-        private static int? count = 0, culflg = 0, flag = 0, culflg2 = 0;
-        private static int prod1 = 0, prod2 = 0, c_cnt1 = 0, c_pcnt1 = 0, c_pcnt2 = 0, c_cnt2 = 0, carr1 = 0, carr2 = 0, tmpcf = 0, err = 0, cntp1 = 0, cntp2 = 0;
+        private static int? culflg = 0, flag = 0, culflg2 = 0;
+        private static int prod1 = 0, prod2 = 0, c_cnt1 = 0, c_pcnt1 = 0, c_pcnt2 = 0, c_cnt2 = 0, carr1 = 0, carr2 = 0, tmpcf = 0, err = 0, cntp1 = 0, cntp2 = 0, res = 0;
         private static decimal va1 = 0, va2 = 0, result = 0, ctmp1_1, ctmp1_2 = 0, ctmp2_1 = 0, ctmp2_2 = 0, pow = 1;
         private static string tmp;
         //culflg -> 1:+ , 2:- , 3:* , 4:/
         //flag -> null:exit , 2:result
+
+        //operator --> q:+ , w:- , e:* , r:/ , a:=
         static int Main()
         {
             calm c1 = new calm();
@@ -42,12 +39,27 @@ namespace Calculator
                     return 0;
                 }else if (flag == 2)
                 {
-                    Console.WriteLine("----------");
-                    Console.WriteLine(result);
-                    Console.WriteLine("----------");
-                    count = culflg = flag = culflg2 = 0;
-                    prod1 = prod2 = c_cnt1 = c_pcnt1 = c_pcnt2 = c_cnt2 = carr1 = carr2 = tmpcf = 0;
-                    va1 = va2 = result = ctmp1_1 = ctmp1_2 = ctmp2_1 = ctmp2_2 = 0;
+                    if (res == 0)
+                    {
+                        
+                        Console.WriteLine("----------");
+                        Console.WriteLine(result);
+                        Console.WriteLine("----------");
+
+                        culflg = 0;
+                        c_cnt1 = c_pcnt1 = carr1 = tmpcf = err = cntp1 = cntp2 = tmpcf = 0;
+                        va1 = result = 0;
+                    }
+                    else if (res == 1)
+                    {
+                        va1 = result;
+                        tmpcf = c_cnt1 = 1;
+                        //Console.WriteLine("va1 --> " + va1);
+                    }
+                    flag = 0;
+                    carr2 = c_pcnt2 = c_cnt2 = 0;
+                    ctmp2_1 = ctmp2_2 = va2 = ctmp1_1 = ctmp1_2 = 0;
+
                     //処理終了初期化
                 }
                 else
@@ -61,7 +73,6 @@ namespace Calculator
         {
             calm c1 = new calm();
 
-            count++;
             culflg2 = prod1 = prod2 = cntp1 = cntp2 = 0;
             pow = 1;
 
@@ -97,7 +108,7 @@ namespace Calculator
                         
                     }
                 }
-                else if ((c_cnt1 != 1) && (tmpcf == 1)) 
+                else if ((c_cnt1 != 0) && (tmpcf == 1)) 
                 {
                     c_cnt2++;
 
@@ -143,7 +154,6 @@ namespace Calculator
             */
             if (Regex.IsMatch(str, "^--"))
             {
-                //Console.WriteLine(true);
 
                 switch (str[2..^0])
                 {
@@ -158,7 +168,7 @@ namespace Calculator
                         Console.WriteLine("This command is not defined");
                         return 0;
                 }
-            } else if ((prod1 == 1) && (culflg2 == 0) && (cntp1 == 1)) 
+            } else if ((prod1 == 1) && (culflg2 == 0) && (cntp1 == 1))
             {
                 carr1 = c_cnt1 - c_pcnt1;                       //小数点後の数値の数
                 tmp = str.Substring(c_pcnt1, carr1);            //小数点後の数値（文字列）
@@ -171,7 +181,7 @@ namespace Calculator
                 }
                 va1 = ctmp1_1 + ctmp1_2 * pow;                  //小数点前後の数値を結合
                 return 0;
-            } else if ((prod2 == 1) && (culflg2 == 0) && (va2 == 0) && (cntp2 == 1))   
+            } else if ((prod2 == 1) && (culflg2 == 0) && (va2 == 0) && (cntp2 == 1))
             {
                 carr2 = c_cnt2 - c_pcnt2;                       //小数点後の数値の数
                 tmp = str.Substring(c_pcnt2, carr2);            //小数点後の数値（文字列）
@@ -185,20 +195,23 @@ namespace Calculator
                 va2 = ctmp2_1 + ctmp2_2 * pow;                  //小数点前後の数値を結合
                 return 0;
             }
-            else if (Regex.IsMatch(str, "^([0-9])+$"))          //すべて数字
+            else if (Regex.IsMatch(str, "^([0-9])+$"))
             {
-                if ((culflg2 == 0) && (va1 == 0))
+                if ((culflg2 == 0) && (va1 == 0) && (res == 0))
                 {
                     va1 = decimal.Parse(str);
                 }
-                else if ((culflg2 == 0) && (va2 == 0) && (culflg != 0)) 
+                else if ((culflg2 == 0) && (va1 != 0) && (culflg != 0))
+                {
+                    va2 = decimal.Parse(str);
+                } else if ((culflg2 == 0) && (res == 1)) 
                 {
                     va2 = decimal.Parse(str);
                 }
                 else
-                {
-                    Console.WriteLine("please enter the operator");
-                }
+            {
+                Console.WriteLine("please enter the operator");
+            }
                 return 0;
             }
             else if (str == "exit")
@@ -207,29 +220,60 @@ namespace Calculator
             }
             else
             {
+                res = 0;
                 switch (str)
                 {
                     case "+":
+                    case "q":
+                        if (tmpcf == 1)
+                        {
+                            Eq();
+                            res = 1;
+                            culflg = 1;
+                            return 2;
+                        }
                         culflg = 1;
                         tmpcf = 1;
-                        prod1 = 0;
                         break;
                     case "-":
+                    case "w":
+                        if (tmpcf == 1)
+                        {
+                            Eq();
+                            res = 1;
+                            culflg = 2;
+                            return 2;
+                        }
                         culflg = 2;
                         tmpcf = 1;
-                        prod1 = 0;
                         break;
                     case "*":
+                    case "e":
+                        if (tmpcf == 1)
+                        {
+                            Eq();
+                            res = 1;
+                            culflg = 3;
+                            return 2;
+                        }
                         culflg = 3;
                         tmpcf = 1;
-                        prod1 = 0;
                         break;
                     case "/":
+                    case "r":
+                        if (tmpcf == 1)
+                        {
+                            Eq();
+                            res = 1;
+                            culflg = 4;
+
+                            return 2;
+                        }
                         culflg = 4;
                         tmpcf = 1;
-                        prod1 = 0;
                         break;
                     case "=":
+                    case "a":
                         Eq();
                         return 2;
                     default:
