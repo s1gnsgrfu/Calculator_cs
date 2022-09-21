@@ -7,6 +7,7 @@ This software is released under the MIT License.
 see https://github.com/s1gnsgrfu/calculator_cs/blob/master/LICENSE
 */
 
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 
 namespace Calculator
@@ -41,16 +42,16 @@ namespace Calculator
             {
                 Console.WriteLine("");
                 Console.Write(">>");
-                flag = c1.Stsp(Console.ReadLine());
+                flag = c1.Identification_string(Console.ReadLine());
 
                 if (flag == null)
                 {
                     return 0;
-                }else if (flag == 2)
+                } else if (flag == 2)
                 {
                     if (res == 0)
                     {
-                        
+
                         Console.WriteLine("----------");
                         Console.WriteLine(result);
                         Console.WriteLine("----------");
@@ -67,7 +68,7 @@ namespace Calculator
                     flag = 0;
                     c1.carr[1] = c1.c_pcnt[1] = c1.c_cnt[1] = 0;
                     c1.ctmp[2] = c1.ctmp[3] = c1.va[1] = c1.ctmp[0] = c1.ctmp[1] = 0;
-                    
+
 
                     //処理終了初期化
                 }
@@ -78,18 +79,18 @@ namespace Calculator
             }
         }
 
-        private int? Stsp(in string str)
+        private int? Identification_string(in string str)
         {
             calm c1 = new calm();
 
 
 
             //エラー時のロールバック
-            if ((va[0] == 0) && (err == 1)) 
+            if ((va[0] == 0) && (err == 1))
             {
                 c_cnt[0] = c_pcnt[0] = carr[0] = 0;
             }
-            else if ((va[0] != 0) && (err == 1)) 
+            else if ((va[0] != 0) && (err == 1))
             {
                 c_cnt[1] = c_pcnt[1] = carr[1] = 0;
             }
@@ -101,7 +102,7 @@ namespace Calculator
             foreach (char tmpc in str)
             {
                 String_analyze(tmpc);
-                
+
             }
             /*
             debug
@@ -114,7 +115,7 @@ namespace Calculator
             Console.WriteLine("culflg --> " + culflg);
             Console.WriteLine("culflg2 --> " + culflg2);
             */
-            
+
             if (Regex.IsMatch(str, "^--"))
             {
                 Disp_option(str);
@@ -125,20 +126,20 @@ namespace Calculator
                 Console.WriteLine("Error");
                 err = 1;
                 return 0;
-            } 
+            }
             else if ((prod1 == 1) && (culflg2 == 0) && (cntp[0] == 1))
             {
-                Decimal_coupling(0,str);
+                Decimal_coupling(0, str);
                 return 0;
-                
+
             }
             else if ((prod2 == 1) && (culflg2 == 0) && (va[1] == 0) && (cntp[1] == 1))
             {
-                Decimal_coupling(1,str);
+                Decimal_coupling(1, str);
                 return 0;
-                
+
             }
-            else if (Regex.IsMatch(str, "^([0-9])+$"))
+            else if (Regex.IsMatch(str, "^([0-9])+$"))      //数字のみ
             {
                 if ((culflg2 == 0) && (va[0] == 0) && (res == 0))
                 {
@@ -147,13 +148,13 @@ namespace Calculator
                 else if ((culflg2 == 0) && (va[0] != 0) && (culflg != 0))
                 {
                     va[1] = decimal.Parse(str);
-                } else if ((culflg2 == 0) && (res == 1)) 
+                } else if ((culflg2 == 0) && (res == 1))
                 {
                     va[1] = decimal.Parse(str);
                 }
                 else
                 {
-                Console.WriteLine("please enter the operator");
+                    Console.WriteLine("please enter the operator");
                 }
                 return 0;
             }
@@ -163,78 +164,13 @@ namespace Calculator
             }
             else
             {
-                res = 0;
-                switch (str)
-                {
-                    case "+":
-                    case "q":
-                        if (tmpcf == 1)
-                        {
-                            Calculation();
-                            res = 1;
-                            culflg = 1;
-                            return 2;
-                        }
-                        culflg = 1;
-                        tmpcf = 1;
-                        break;
-                    case "-":
-                    case "w":
-                        if (tmpcf == 1)
-                        {
-                            Calculation();
-                            res = 1;
-                            culflg = 2;
-                            return 2;
-                        }
-                        culflg = 2;
-                        tmpcf = 1;
-                        break;
-                    case "*":
-                    case "e":
-                        if (tmpcf == 1)
-                        {
-                            Calculation();
-                            res = 1;
-                            culflg = 3;
-                            return 2;
-                        }
-                        culflg = 3;
-                        tmpcf = 1;
-                        break;
-                    case "/":
-                    case "r":
-                        if (tmpcf == 1)
-                        {
-                            Calculation();
-                            res = 1;
-                            culflg = 4;
+                flag = Identification_operator(str);
+                return flag;
 
-                            return 2;
-                        }
-                        culflg = 4;
-                        tmpcf = 1;
-                        break;
-                    case "=":
-                    case "a":
-                        Calculation();
-                        return 2;
-                    default:
-                        if ((va[0] != 0) && (culflg == 0)) 
-                        {
-                            Console.WriteLine("please enter the operator");
-                        }
-                        else
-                        {
-                            Console.WriteLine("Error");
-                            err = 1;
-                        }
-                        break;
-                }
-                return 0;
             }
+            //return 0;
         }
-
+    
         private void String_analyze(char tmpc)
         {
             if (va[0] == 0)
@@ -345,8 +281,83 @@ namespace Calculator
             return;
         }
 
+        private int Identification_operator(string str)
+        {
+            calm c1 = new calm();
+            //Console.WriteLine("str --> " + str);      //debug
+            res = 0;
+            switch (str)
+            {
+                case "+":
+                case "q":
+                    if (tmpcf == 1)
+                    {
+                        Calculation();
+                        res = 1;
+                        culflg = 1;
+                        return 2;
+                    }
+                    culflg = 1;
+                    tmpcf = 1;
+                    break;
+                case "-":
+                case "w":
+                    if (tmpcf == 1)
+                    {
+                        Calculation();
+                        res = 1;
+                        culflg = 2;
+                        return 2;
+                    }
+                    culflg = 2;
+                    tmpcf = 1;
+                    break;
+                case "*":
+                case "e":
+                    if (tmpcf == 1)
+                    {
+                        Calculation();
+                        res = 1;
+                        culflg = 3;
+                        return 2;
+                    }
+                    culflg = 3;
+                    tmpcf = 1;
+                    break;
+                case "/":
+                case "r":
+                    if (tmpcf == 1)
+                    {
+                        Calculation();
+                        res = 1;
+                        culflg = 4;
 
-        private int? Calculation()
+                        return 2;
+                    }
+                    culflg = 4;
+                    tmpcf = 1;
+                    break;
+                case "=":
+                case "a":
+                    //Console.WriteLine("culflg --> " + culflg);    //debug
+                    Calculation();
+                    return 2;
+                default:
+                    if ((va[0] != 0) && (culflg == 0))
+                    {
+                        Console.WriteLine("please enter the operator");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Error");
+                        err = 1;
+                    }
+                    break;
+            }
+            return 0;
+        }
+
+        private void Calculation()
         {
             calm c1 = new calm();
 
@@ -373,7 +384,6 @@ namespace Calculator
                     }
                     break;
             }
-            return 0;
         }
     }
 }
