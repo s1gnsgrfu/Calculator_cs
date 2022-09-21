@@ -15,9 +15,9 @@ namespace Calculator
     class calm
     {
         private static int? culflg = 0, flag = 0, culflg2 = 0;
-        private static int prod1 = 0, prod2 = 0, tmpcf = 0, err = 0, res = 0;
+        private static int prod1 = 0, prod2 = 0, tmpcf = 0, err = 0, res = 0, pi_flag = 0;
         private static decimal result = 0, pow = 1;
-        private static string tmp;
+        //private static string? tmp;
         private int[] c_cnt = new int[2];
         private int[] c_pcnt = new int[2];
         private int[] carr = new int[2];
@@ -25,7 +25,7 @@ namespace Calculator
         private decimal[] va = new decimal[2];
         private decimal[] ctmp = new decimal[4];
 
-        private decimal pi = 3.14159265359m;
+        private readonly decimal pi = 3.14159265359m;
 
 
         //culflg -> 1:+ , 2:- , 3:* , 4:/
@@ -141,26 +141,18 @@ namespace Calculator
             }
             else if (Regex.IsMatch(str, "^([0-9])+$"))      //数字のみ
             {
-                if ((culflg2 == 0) && (va[0] == 0) && (res == 0))
-                {
-                    va[0] = decimal.Parse(str);
-                }
-                else if ((culflg2 == 0) && (va[0] != 0) && (culflg != 0))
-                {
-                    va[1] = decimal.Parse(str);
-                } else if ((culflg2 == 0) && (res == 1))
-                {
-                    va[1] = decimal.Parse(str);
-                }
-                else
-                {
-                    Console.WriteLine("please enter the operator");
-                }
+                Numeric_assignment(str);
                 return 0;
             }
             else if (str == "exit")
             {
                 return null;
+            }else if (str == "pi")
+            {
+                pi_flag = 1;
+                Numeric_assignment(str);
+                pi_flag = 0;
+                return 0;
             }
             else
             {
@@ -278,6 +270,48 @@ namespace Calculator
             }
             va[ind] = ctmp[ind2] + ctmp[ind2+1] * pow;                  //小数点前後の数値を結合
             */
+            return;
+        }
+
+        private void Numeric_assignment(string str)
+        {
+            if ((culflg2 == 0) && (va[0] == 0) && (res == 0))
+            {
+                if (pi_flag == 1)
+                {
+                    va[0] = pi;
+                }
+                else
+                {
+                    va[0] = decimal.Parse(str);
+                }
+            }
+            else if ((culflg2 == 0) && (va[0] != 0) && (culflg != 0))
+            {
+                if (pi_flag == 1)
+                {
+                    va[1] = pi;
+                }
+                else
+                {
+                    va[1] = decimal.Parse(str);
+                }
+            }
+            else if ((culflg2 == 0) && (res == 1))
+            {
+                if (pi_flag == 1)
+                {
+                    va[1] = pi;
+                }
+                else
+                {
+                    va[1] = decimal.Parse(str);
+                }
+            }
+            else
+            {
+                Console.WriteLine("please enter the operator");
+            }
             return;
         }
 
