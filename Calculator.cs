@@ -1,14 +1,16 @@
 ﻿/*
-calculator.cs
+Calculator.cs
 
 Copyright(c) 2022 S'(s1gnsgrfu)
 
 This software is released under the MIT License.
-see https://github.com/s1gnsgrfu/calculator_cs/blob/master/LICENSE
+see https://github.com/s1gnsgrfu/Calculator_cs/blob/master/LICENSE
 */
 
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using System.IO;
+using System.Text;
 
 namespace Calculator
 {
@@ -26,7 +28,7 @@ namespace Calculator
         private decimal[] ctmp = new decimal[4];
 
         private readonly decimal pi = 3.14159265359m;
-
+        private readonly string version = "v1.0.0";
 
         //culflg -> 1:+ , 2:- , 3:* , 4:/
         //flag -> null:exit , 2:result
@@ -223,14 +225,17 @@ namespace Calculator
 
         private void Disp_option(string str)
         {
+            string path;
             switch (str[2..^0])
             {
                 case "help":
-                    Console.WriteLine("help");
+                    path = "../../../option//HELP.txt";
+                    //path = "option//HELP.txt";
+                    var text = File.ReadAllText(path);
+                    Console.WriteLine(text);
                     break;
                 case "version":
-                    Console.WriteLine("version");
-                    Console.WriteLine("v1.0.0");
+                    Console.WriteLine("Calculator_cs version "+version);
                     break;
                 default:
                     Console.WriteLine("This command is not defined");

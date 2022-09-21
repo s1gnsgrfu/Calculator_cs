@@ -1,0 +1,17 @@
+Option
+--help	Display help guide.
+--version	Displays current version.
+
+Command
+exit		Exit Software.
+
+HOW TO USE
+STEP1		Enter the first term to be calculated
+STEP2		Enter the operator to calculate.
+STEP3		Enter the second term to be calculated.
+Next 		Repeat from STEP2 below
+
+Qualifier
+pi		Treat as pi
+
+If you need help? Please contact S'(s1gnsgrfu) : https://github.com/s1gnsgrfu
