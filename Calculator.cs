@@ -17,13 +17,14 @@ namespace Calculator
     class calm
     {
         private static int? culflg = 0, flag = 0, culflg2 = 0;
-        private static int prod1 = 0, prod2 = 0, tmpcf = 0, err = 0, res = 0, pi_flag = 0;
+        private static int prod1 = 0, prod2 = 0, tmpcf = 0, res = 0, pi_flag = 0;
         private static decimal result = 0, pow = 1;
         //private static string? tmp;
         private int[] c_cnt = new int[2];
         private int[] c_pcnt = new int[2];
         private int[] carr = new int[2];
         private int[] cntp = new int[2];
+        private int[] err = new int[2];
         private decimal[] va = new decimal[2];
         private decimal[] ctmp = new decimal[4];
 
@@ -33,6 +34,38 @@ namespace Calculator
         //culflg -> 1:+ , 2:- , 3:* , 4:/
         //flag -> null:exit , 2:result
         //operator --> q:+ , w:- , e:* , r:/ , a:=
+        private void Variable_initialization(int reset_type)
+        {
+            if (reset_type == 0)        //全変数初期化
+            {
+                culflg = flag = culflg2 = 0;
+                prod1 = prod2 = tmpcf = res = pi_flag = 0;
+                result = 0;
+                pow = 1;
+                for (int i = 0; i < 2; i++)
+                {
+                    c_cnt[i] = 0;
+                    c_pcnt[i] = 0;
+                    carr[i] = 0;
+                    cntp[i] = 0;
+                    err[i] = 0;
+                    va[i] = 0;
+                }
+                for (int i = 0; i < 4; i++)
+                {
+                    ctmp[i] = 0;
+                }
+            }
+            else if (reset_type == 1)       //第3項以降の変数初期化
+            {
+                va[0] = result;
+                tmpcf = c_cnt[0] = 1;
+                flag = 0;
+                carr[1] = c_pcnt[1] = c_cnt[1] = 0;
+                ctmp[2] = ctmp[3] = va[1] = ctmp[0] = ctmp[1] = 0;
+            }
+            return;
+        }
         static int Main()
         {
             calm c1 = new calm();
@@ -58,21 +91,15 @@ namespace Calculator
                         Console.WriteLine(result);
                         Console.WriteLine("----------");
 
-                        culflg = 0;
-                        c1.c_cnt[0] = c1.c_pcnt[0] = c1.carr[0] = tmpcf = err = c1.cntp[0] = c1.cntp[1] = tmpcf = 0;
-                        c1.va[0] = result = 0;
+                        c1.Variable_initialization(0);
                     }
-                    else if (res == 1)
+                    else if (res == 1)      //第3項以降
                     {
-                        c1.va[0] = result;
-                        tmpcf = c1.c_cnt[0] = 1;
+                        c1.Variable_initialization(1);
                     }
-                    flag = 0;
-                    c1.carr[1] = c1.c_pcnt[1] = c1.c_cnt[1] = 0;
-                    c1.ctmp[2] = c1.ctmp[3] = c1.va[1] = c1.ctmp[0] = c1.ctmp[1] = 0;
-
-
-                    //処理終了初期化
+                }else if(flag == 3)     //100項を超えたとき
+                {
+                    c1.Variable_initialization(0);
                 }
                 else
                 {
@@ -85,21 +112,30 @@ namespace Calculator
         {
             calm c1 = new calm();
 
+            if (str == "exit")
+            {
+                return null;
+            }
+            Split_string(str);
+            if (err[1] == 1)        //100項を超えたとき
+            {
+                return 3;
+            }
 
 
             //エラー時のロールバック
-            if ((va[0] == 0) && (err == 1))
+            if ((va[0] == 0) && (err[0] == 1))
             {
                 c_cnt[0] = c_pcnt[0] = carr[0] = 0;
             }
-            else if ((va[0] != 0) && (err == 1))
+            else if ((va[0] != 0) && (err[0] == 1))
             {
                 c_cnt[1] = c_pcnt[1] = carr[1] = 0;
             }
 
             culflg2 = prod1 = prod2 = cntp[0] = cntp[1] = 0;
             pow = 1;
-            err = 0;
+            err[0] = 0;
 
             foreach (char tmpc in str)
             {
@@ -126,7 +162,7 @@ namespace Calculator
             else if (str == ".")
             {
                 Console.WriteLine("Error");
-                err = 1;
+                err[0] = 1;
                 return 0;
             }
             else if ((prod1 == 1) && (culflg2 == 0) && (cntp[0] == 1))
@@ -145,10 +181,6 @@ namespace Calculator
             {
                 Numeric_assignment(str);
                 return 0;
-            }
-            else if (str == "exit")
-            {
-                return null;
             }else if (str == "pi")
             {
                 pi_flag = 1;
@@ -164,7 +196,73 @@ namespace Calculator
             }
             //return 0;
         }
-    
+        
+        private void Split_string(string str)
+        {
+            int count = 0, count_blank = 0, blank_flag = 0, pre_blank = 0, next_str_flag = 0;
+            string[] str2 = new string[99];        //100項まで
+            count = count_blank = blank_flag = pre_blank = next_str_flag = 0;
+
+            /*
+            for(int i = 0; i <= 100; i++)       //debug
+            {
+                str += i;
+                str += " ";
+            }
+            */
+
+            foreach(char c in str)
+            {
+                if (c == ' ')
+                {
+                    if (count == 0)      //先頭文字の空白削除
+                    {
+                        ;
+                    }
+                    else if (blank_flag == count)       //二回目以降の空白繰り返し無視
+                    {
+                        ;
+                    }
+                    else if (count_blank == pre_blank)      //文字列代入後初回
+                    {
+                        count_blank++;
+                        blank_flag = count;
+                        next_str_flag = 1;
+                        
+                    }
+                }
+                else
+                {
+                    count++;
+                    //Console.WriteLine("str2[" + count_blank + "] <- " + c);       //debug
+                    try
+                    {
+                        str2[count_blank] += c;
+                    }
+                    catch (System.IndexOutOfRangeException)
+                    {
+                        Console.WriteLine("Please enter an expression of no more than 100 terms.");
+                        err[1] = 1;
+                        return;
+                    }
+                    pre_blank = count_blank;
+                    next_str_flag = 0;
+                }
+            }
+
+            if(next_str_flag == 1)      //文字列末尾の空白判定によるcount_blank増加のロールバック
+            {
+                count_blank--;
+            }
+            /*
+            for(int i = 0; i <= count_blank; i++)       //debug
+            {
+                Console.WriteLine("str2[" + i + "] --> " + str2[i]);
+            }
+            */
+
+            return;
+        }
         private void String_analyze(char tmpc)
         {
             if (va[0] == 0)
@@ -389,7 +487,7 @@ namespace Calculator
                     else
                     {
                         Console.WriteLine("Error");
-                        err = 1;
+                        err[0] = 1;
                     }
                     break;
             }
@@ -424,5 +522,7 @@ namespace Calculator
                     break;
             }
         }
+
+
     }
 }
