@@ -27,6 +27,7 @@ namespace Calculator
         private int[] err = new int[2];
         private decimal[] va = new decimal[2];
         private decimal[] ctmp = new decimal[4];
+        string[] split_str = new string[99];        //100項まで
 
         private readonly decimal pi = 3.14159265359m;
         private readonly string version = "v1.0.0";
@@ -54,6 +55,10 @@ namespace Calculator
                 for (int i = 0; i < 4; i++)
                 {
                     ctmp[i] = 0;
+                }
+                for (int i = 0; i < 99; i++)
+                {
+                    split_str[i] = "";
                 }
             }
             else if (reset_type == 1)       //第3項以降の変数初期化
@@ -93,11 +98,11 @@ namespace Calculator
 
                         c1.Variable_initialization(0);
                     }
-                    else if (res == 1)      //第3項以降
+                    else if (res == 1)      //第3項以降 --> 連続処理に要変更
                     {
                         c1.Variable_initialization(1);
                     }
-                }else if(flag == 3)     //100項を超えたとき
+                }else if(flag == 3)     //100項を超えたとき または 全変数初期化
                 {
                     c1.Variable_initialization(0);
                 }
@@ -111,8 +116,12 @@ namespace Calculator
         private int? Identification_string(in string str)
         {
             calm c1 = new calm();
-
-            if (str == "exit")
+            if (Regex.IsMatch(str, "^--"))
+            {
+                Disp_option(str);
+                return 3;
+            }
+            else if (str == "exit")
             {
                 return null;
             }
@@ -142,8 +151,9 @@ namespace Calculator
                 String_analyze(tmpc);
 
             }
+
+            //debug
             /*
-            debug
             Console.WriteLine("c_cnt1  --> " + c_cnt[0]);
             Console.WriteLine("c_pcnt1 -->"+c_pcnt[0]);
             Console.WriteLine("c_cnt2  --> " + c_cnt[1]);
@@ -154,12 +164,8 @@ namespace Calculator
             Console.WriteLine("culflg2 --> " + culflg2);
             */
 
-            if (Regex.IsMatch(str, "^--"))
-            {
-                Disp_option(str);
-                return 0;
-            }
-            else if (str == ".")
+            
+            if (str == ".")
             {
                 Console.WriteLine("Error");
                 err[0] = 1;
@@ -200,7 +206,6 @@ namespace Calculator
         private void Split_string(string str)
         {
             int count = 0, count_blank = 0, blank_flag = 0, pre_blank = 0, next_str_flag = 0;
-            string[] str2 = new string[99];        //100項まで
             count = count_blank = blank_flag = pre_blank = next_str_flag = 0;
 
             /*
@@ -234,10 +239,10 @@ namespace Calculator
                 else
                 {
                     count++;
-                    //Console.WriteLine("str2[" + count_blank + "] <- " + c);       //debug
+                    //Console.WriteLine("split_str[" + count_blank + "] <- " + c);       //debug
                     try
                     {
-                        str2[count_blank] += c;
+                        split_str[count_blank] += c;
                     }
                     catch (System.IndexOutOfRangeException)
                     {
@@ -254,12 +259,12 @@ namespace Calculator
             {
                 count_blank--;
             }
-            /*
+            
             for(int i = 0; i <= count_blank; i++)       //debug
             {
-                Console.WriteLine("str2[" + i + "] --> " + str2[i]);
+                Console.WriteLine("split_str[" + i + "] --> " + split_str[i]);
             }
-            */
+            
 
             return;
         }
@@ -324,15 +329,15 @@ namespace Calculator
         private void Disp_option(string str)
         {
             string path;
-            switch (str[2..^0])
+            switch (str)
             {
-                case "help":
+                case "--help":
                     path = "../../../option//HELP.txt";
                     //path = "option//HELP.txt";
                     var text = File.ReadAllText(path);
                     Console.WriteLine(text);
                     break;
-                case "version":
+                case "--version":
                     Console.WriteLine("Calculator_cs version "+version);
                     break;
                 default:
