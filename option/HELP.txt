@@ -5,13 +5,17 @@ Option
 Command
 exit		Exit Software.
 
-HOW TO USE
-STEP1		Enter the first term to be calculated
-STEP2		Enter the operator to calculate.
-STEP3		Enter the second term to be calculated.
-Next 		Repeat from STEP2 below
-
 Qualifier
-pi		Treat as pi
+pi		Treat as pi.
+
+HOW TO USE
+[1] [operator] [2] [operator] ...
+
+Available operators
+"+" "-" "*" "/" "="
+
+Caution
+Please put a space between the number and the operator.
+Supports integer and decimal point only calculations.
 
 If you need help? Please contact S'(s1gnsgrfu) : https://github.com/s1gnsgrfu
