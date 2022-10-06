@@ -26,7 +26,7 @@ namespace Calculator
         string[] split_str = new string[99];        //100項まで
 
         private readonly decimal pi = 3.14159265359m;
-        private readonly string version = "v1.0.0";
+        private readonly string version = "v2.0.0";
 
         //culflg -> 1:+ , 2:- , 3:* , 4:/
         //flag -> null:exit , 2:result
@@ -241,8 +241,8 @@ namespace Calculator
             switch (str)
             {
                 case "--help":
-                    path = "../../../option//HELP.txt";
-                    //path = "option//HELP.txt";
+                    //path = "../../../option//HELP.txt";
+                    path = "option//HELP.txt";
                     var text = File.ReadAllText(path);
                     Console.WriteLine(text);
                     break;
